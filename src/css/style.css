@@ -1,0 +1,406 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+}
+
+:root {
+  --verde: rgb(6, 218, 157);
+  --gris: rgb(128, 126, 126);
+  --nigga: black;
+  --secundario:#ff6060;
+  height: 100vh;
+  width: 100%;
+}
+
+.conteiner_menu{
+  padding: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+ 
+  .tarjeta_menu{
+    background-color: white;
+    color:var(--nigga);
+    padding: 1em;
+    height: 20rem ;
+   
+    width: 15,6rem;
+    margin: 1em;
+    border-radius:1rem;
+     transition: background-color 0.3s ease, transform 0.3s ease;
+    tarjeta_menu:hover{
+  transform: scale(1.1);
+    }
+    .contenedor_imagen{
+    
+      
+      img{
+        max-height:8rem;
+        max-width:14rem;
+        background-position: center;
+        background-size: cover;
+        border-radius:1rem;
+      }
+    }
+    .contenedor_info{
+      height: 70%;
+      width: 100%;
+    }
+    .precio{
+      font-weight:600;
+      font-size:1.5rem;
+      padding-top:1rem;
+      color:var(--verde);
+    }
+    .NombrePlato{
+      font-weight:800;
+      line-height: 1.1;
+      font-size:1.2rem;
+      padding-top:1rem;
+    }
+  }
+  .ContButtons{
+    display:flex; 
+    padding-top:1.5rem;
+    justify-content:space-around;
+    button{
+      width:5.5rem;
+      height:2.5rem;
+      border-radius: 8px;
+       border: 1px solid transparent;
+       transition: background-color 0.3s ease, transform 0.3s ease;
+       cursor: pointer;
+      background: #242424;
+      font-weight: 750;
+    }
+    button:hover{
+     background:#ff6060;
+     transform: scale(1.1);
+    }
+  }
+   button{
+      width:5.5rem;
+      height:2.5rem;
+      border-radius: 8px;
+       border: 1px solid transparent;
+     
+       cursor: pointer;
+      background: #242424;
+      font-weight: 750;
+    }
+}
+img{
+  height: 100%;
+  width: 100%;
+}
+body {
+  height: 100vh;
+  width: 100%;
+}
+
+header {
+  height: 25rem;
+  width: 100%;
+  gap: 40px;
+  background-image: url(../img/restau.webp);
+  background-position: center;
+  background-size: cover;
+
+  .portada {
+    height: 65%;
+    width: 100%;
+    position: relative;
+    background: linear-gradient(0deg,
+        rgba(0, 0, 0, 0.493),
+        rgba(255, 255, 255, 0) 90%);
+
+    & .saludo {
+      position: absolute;
+      color: white;
+      bottom: 5%;
+      left: 10%;
+      margin-bottom: 20px;
+    }
+
+    .buscador {
+      position: absolute;
+      bottom: -20px;
+      right: 5%;
+      left: 5%;
+      margin: auto;
+      height: 40px;
+      width: 80%;
+      background-color: rgb(255, 255, 255);
+      display: flex;
+      box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+
+      & input[type="search"] {
+        width: calc(100% - 80px);
+        border: solid 1px black;
+        border-left: none;
+        outline: none;
+        padding: 10px;
+        color: var(--nigga);
+      }
+
+      & input[type="submit"] {
+        width: 40px;
+        border: none;
+        outline: none;
+        border: solid 1px black;
+        border-left: none;
+        background-color: white;
+        transition: all 0.3s ease-in-out;
+        
+      }
+
+      & input[type="submit"]:hover {
+     
+        color: white;
+        background-color: #ff6060;
+      }
+
+      & .icono {
+        width: 40px;
+        color:rgb(85, 82, 82);
+        background-color: #ff6060;
+        display: grid;
+        place-items: center;
+        border: solid 1px black;
+      }
+    }
+  }
+}
+
+
+main.index {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  margin-top: 2rem;
+
+  .offers {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 85%;
+    margin: auto;
+    padding-bottom: 50px;
+    gap: 30px;
+    padding-top: 30px;
+
+  }
+  
+  }
+
+  & span.titulo {
+    display:flex;
+    justify-content:space-between;
+    font-size: 1.5rem;
+ font-weight: 700;
+   width: 100%;
+   line-height: 1.1;
+   height: 3rem;
+  
+  }
+
+  .datos {
+    margin: 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 90%;
+    height: 100%;
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+.blanco{
+  background-color: #ffffff;
+}
+nav.categorias {
+  height: 10rem;
+  width: 100% ;
+  background-color: rgb(255, 255, 255);
+  padding: 30px;
+  padding-top: 50px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  scrollbar-width:thin;
+  overflow: hidden;
+  overflow-x: scroll;
+  scrollbar-color: #ff6060 white;
+
+  & .btn_categoria {
+    height: 70px;
+    flex: 0 0 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color:#ff6060;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .btn_categoria:visited {
+    color:#ff6060;
+  }
+  .btn_categoria:hover{
+    color:var(--nigga);
+    transform: scale(1.1);
+  }
+}
+
+header.restaurante {
+  height: 25rem;
+  width: 100%;
+
+  background-image: url(../img/restau.webp);
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
+
+  .portada {
+    height: 80%;
+    width: 100%;
+    position: relative;
+    background: linear-gradient(0deg,
+        rgba(0, 0, 0, 0.493),
+        rgba(255, 255, 255, 0) 90%);
+
+    a {
+      margin: 20px;
+      font-size: 25pt;
+    }
+
+    .calificacion {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      height: 45px;
+      width: 55px;
+      background-color: rgb(6, 218, 157);
+      border-radius: 15px 0;
+      right: 35px;
+      bottom: -15px;
+      color: #ffffff;
+      font: 1.3em sans-serif;
+      box-shadow: 0px 30px 35px -10px rgba(0, 0, 0, 0.212);
+    }
+  }
+
+  .informacion {
+    height: 20%;
+    width: 100%;
+   background-color: #242424;
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+    align-items: center;
+
+    p {
+      margin-top: 7px;
+    }
+  }
+}
+
+nav.restaurant {
+  position: fixed;
+  width: 100%;
+  height: 60px;
+  box-shadow: -3px -3px 25px -15px rgba(0, 0, 0, 0.418);
+  bottom: 0;
+  display: flex;
+
+  button {
+    display: grid;
+    place-items: center;
+    flex: 0 0 33.33%;
+    border: 0;
+   background-color: #242424;
+    cursor: pointer;
+  
+  }
+
+  button:hover {
+    font-weight: 700;
+    border-top: solid 3px var(--verde);
+  }
+
+}
+
+
+.flex {
+  display: flex;
+}
+button.carrito{
+  width:5.5rem;
+  height:2.5rem;
+  border-radius: 8px;
+   border: 1px solid transparent;
+   cursor: pointer;
+  background:none;
+  font-weight: 750;
+  transition: all 0.3s ease-in-out;
+}
+button.carrito:hover{
+  color:#ff6060;
+  transform: scale(1.5);
+}
+@media screen and (orientation=landscape) {
+  main.index {
+    padding: 20px;
+
+    .offers {
+      width: 100%;
+      display: flex !important;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    a {
+      height: 160px;
+      flex: 0 0 calc(50% - 15px);
+    }
+  }
+
+  main.menu {
+    padding: 20px;
+    width: 100%;
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    a {
+      height: 160px;
+      flex: 0 0 calc(40% - 15px);
+    }
+
+    span.Titulo {
+      right: 45%;
+    }
+  }
+}
+
+@media screen and (orientation=portrait) {}
