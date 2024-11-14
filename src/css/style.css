@@ -1,21 +1,4 @@
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  list-style: none;
-  text-decoration: none;
-}
-
-:root {
-  --verde: rgb(6, 218, 157);
-  --gris: rgb(128, 126, 126);
-  --nigga: black;
-  --secundario:#ff6060;
-  height: 100vh;
-  width: 100%;
-}
-
 .conteiner_menu{
   padding: 1em;
   display: flex;
@@ -38,8 +21,6 @@
   transform: scale(1.1);
     }
     .contenedor_imagen{
-    
-      
       img{
         max-height:8rem;
         max-width:14rem;
@@ -103,18 +84,53 @@ body {
   height: 100vh;
   width: 100%;
 }
-
+.header{
+  background-color: #ffffff;
+  display: flex;
+  justify-content: end;
+  height: 4.5rem;
+  color: #242424;
+  
+  .button{
+    color: #242424;
+    height: 3rem;
+    width: 6.5rem;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    border-radius: 1rem;
+    border: 1.2px solid var(--secundario); 
+    margin: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  .buttoncontenedor_info:hover{
+    background-color: var(--secundario);
+    color: #ffffff;
+  }
+  .titulo{
+    font-weight: 700;
+    width: 100%;
+font-size: 2rem;
+    display: flex;
+    padding-left: 10rem;
+    justify-content: center;
+    align-items: center;
+  }
+}
 header {
   height: 25rem;
   width: 100%;
   gap: 40px;
-  background-image: url(../img/restau.webp);
   background-position: center;
   background-size: cover;
 
   .portada {
     height: 65%;
     width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
     position: relative;
     background: linear-gradient(0deg,
         rgba(0, 0, 0, 0.493),
@@ -274,7 +290,7 @@ header.restaurante {
   height: 25rem;
   width: 100%;
 
-  background-image: url(../img/restau.webp);
+ 
   background-position: center;
   background-size: cover;
   overflow: hidden;
@@ -331,7 +347,7 @@ nav.restaurant {
   bottom: 0;
   display: flex;
 
-  button {
+  button.contenedor_info {
     display: grid;
     place-items: center;
     flex: 0 0 33.33%;
@@ -352,19 +368,19 @@ nav.restaurant {
 .flex {
   display: flex;
 }
-button.carrito{
-  width:5.5rem;
-  height:2.5rem;
+.carrito{
+
   border-radius: 8px;
    border: 1px solid transparent;
    cursor: pointer;
   background:none;
   font-weight: 750;
+  font-size: 2rem;
   transition: all 0.3s ease-in-out;
 }
-button.carrito:hover{
-  color:#ff6060;
-  transform: scale(1.5);
+.carrito:hover{
+  color: #ff6060;
+transform: scale(1.5);
 }
 @media screen and (orientation=landscape) {
   main.index {

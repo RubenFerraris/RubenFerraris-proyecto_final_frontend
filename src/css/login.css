@@ -1,16 +1,22 @@
-
+.container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .login-container {
     max-width: 400px;
     margin: 50px auto;
-    padding: 20px;
+    padding: 2rem;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 1rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-   color: #2980b9;
+   color: #ff6060;
+   background-color: #e9e5e507;
   }
   
   h2 {
     text-align: center;
+    font-size: 3rem;
   }
   
   .input-group {

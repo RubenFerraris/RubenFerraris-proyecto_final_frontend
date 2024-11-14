@@ -60,3 +60,37 @@
     color: #555;
   }
   
+  .header{
+    background-color: #ffffff;
+    display: flex;
+    height: 4.5rem;
+    width: 100%;
+    color: #242424;
+    
+    .button{
+      color: #242424;
+      height: 3rem;
+      width: 6.5rem;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      border-radius: 1rem;
+      border: 1.2px solid var(--secundario); 
+      margin: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+    .button:hover{
+      background-color: var(--secundario);
+      color: #ffffff;
+    }
+    .titulo{
+      font-weight: 700;
+      width: 100%;
+  font-size: 2rem;
+      display: flex;
+    
+      justify-content: center;
+      align-items: center;
+    }
+  }
