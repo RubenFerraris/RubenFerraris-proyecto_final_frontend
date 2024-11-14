@@ -1,0 +1,13 @@
+[
+    {"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+    {"type":"database","name":"6915"},
+    {"type":"table","name":"restaurante__usuario","database":"6915","data":
+    [
+    {"ID_USUARIO":"1","nombre_usuario":"mely","nombre":"melina","apellido":"choque","email":"melinac9750@gmail.com","telefono":"1170232321","direccion":"Buscala","altura":"2342","contraseña":"1234"},
+    {"ID_USUARIO":"2","nombre_usuario":"ruben","nombre":"ruben","apellido":"ferraris","email":"rubenferraris@","telefono":"23432142","direccion":"Ni idea","altura":"1234","contraseña":"hola"},
+    {"ID_USUARIO":"3","nombre_usuario":"sebas","nombre":"sebas","apellido":"choque","email":"sebaschoque","telefono":"12323","direccion":"dire","altura":"1232","contraseña":"nose "},
+    {"ID_USUARIO":"4","nombre_usuario":"May","nombre":"May","apellido":"Speso","email":"may@gmail.com","telefono":"123456789","direccion":"Ni idea","altura":"245","contraseña":"xd"}
+    ]
+    }
+    ]
+    

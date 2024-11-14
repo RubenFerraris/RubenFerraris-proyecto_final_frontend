@@ -1,67 +1,53 @@
-import '../css/login.css';
-import { Link } from "react-router-dom";
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../css/login.css';
 
-const Login = () => {
- 
+export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    
-    if (!username || !password) {
-      setError('Por favor, ingresa tanto el nombre de usuario como la contraseña.');
-      return;
-    }
-
-
-    console.log('Usuario:', username);
-    console.log('Contraseña:', password);
-    alert('¡Bienvenido!');
-    
-    setUsername('');
-    setPassword('');
-    setError('');
+  const handleLogin = () => {
+    fetch('/usuariosData.json')
+      .then((response) => response.json())
+      .then((data) => {
+        const usuarios = data.find(item => item.type === 'table' && item.name === 'restaurante__usuario').data;
+        const user = usuarios.find(
+          (u) => u.nombre_usuario === username && u.contraseña === password
+        );
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+          navigate('/');
+        } else {
+          setError('Usuario o contraseña incorrectos');
+        }
+      })
+      .catch((error) => console.error('Error loading user data:', error));
   };
 
   return (
-    <div className="login-container">
-      <h2>Iniciar sesión</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="username">Nombre de usuario:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu nombre de usuario"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">Contraseña:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ingresa tu contraseña"
-          />
-        </div>
-        
+    <div className="contenedor">
+      <div className="register-container">
+        <h2>Iniciar Sesión</h2>
+        <input
+          type="text"
+          placeholder="Nombre de usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={handleLogin}>Iniciar Sesión</button>
         {error && <p className="error-message">{error}</p>}
-        
-        <button type="submit">Iniciar sesión</button>
-      </form>
+        <p>
+          ¿No tienes una cuenta? <a href="/register">Regístrate aquí</a>
+        </p>
+      </div>
     </div>
   );
-};
-
-export default Login;
-
-
-
+}

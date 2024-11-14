@@ -24,15 +24,6 @@
  --secundario:#ff6060;
 }
 
-a {
-  font-weight: 500;
-  color: #ff6060;
-  text-decoration: inherit;
-  cursor:pointer;
-}
-a:hover {
-  color: black;
-}
 
 .letra-negra{
   color: black;

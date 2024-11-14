@@ -1,0 +1,16 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"6915"},
+{"type":"table","name":"restaurante__categorias","database":"6915","data":
+[
+{"ID_CATEGORIA":"1","nombreCategoria":"Aperitivos","icono":"fastfood"},
+{"ID_CATEGORIA":"2","nombreCategoria":"Platos principales","icono":"restaurant"},
+{"ID_CATEGORIA":"3","nombreCategoria":"Guarniciones","icono":"rice_bowl"},
+{"ID_CATEGORIA":"4","nombreCategoria":"Bebidas","icono":"local_drink"},
+{"ID_CATEGORIA":"5","nombreCategoria":"Menú infantil","icono":"child_care"},
+{"ID_CATEGORIA":"6","nombreCategoria":"Opciones veganas","icono":"eco"},
+{"ID_CATEGORIA":"7","nombreCategoria":"Platos sin gluten","icono":"grain"},
+{"ID_CATEGORIA":"8","nombreCategoria":"Especiales del día","icono":"local_offer"}
+]
+}
+]

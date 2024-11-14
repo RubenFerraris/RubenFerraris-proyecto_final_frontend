@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/reseñas.css';
-
+import { Link } from 'react-router-dom';
 const reviews = [
   {
     id: 1,
@@ -41,7 +41,8 @@ const ReviewCard = ({ name, date, rating, comment }) => {
 
 const Reviews = () => {
   return (
-    <> <div className="header"><div className="titulo">La Tablita-Reseñas</div><div className="button">Registrarse</div><div className="button">Registrarse</div></div>
+    <>  <div className="header"><div className="titulo">La Tablita-Reseñas</div><Link to='/login'><div className="button">Iniciar sesion</div></Link>
+    <Link to='/register'><div className="button">Registrarse</div></Link></div>
     <div className="reviews-container">
       {reviews.map((review) => (
         <ReviewCard

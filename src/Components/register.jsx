@@ -1,127 +1,106 @@
-import '../css/login.css';
-import { Link } from "react-router-dom";
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../css/login.css';
 
-const Register = () => {
- 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export default function Register() {
+  const [userData, setUserData] = useState({
+    nombre_usuario: '',
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    direccion: '',
+    altura: '',
+    contraseña: ''
+  });
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    
-    if (!username || !password) {
-      setError('Por favor, ingresa tanto el nombre de usuario como la contraseña.');
-      return;
-    }
+  const handleRegister = () => {
+    fetch('/usuariosData.json')
+      .then((response) => response.json())
+      .then((data) => {
+        const usuarios = data.find(item => item.type === 'table' && item.name === 'restaurante__usuario').data;
+        const userExists = usuarios.some(u => u.nombre_usuario === userData.nombre_usuario || u.email === userData.email);
 
-
-    console.log('Usuario:', username);
-    console.log('Contraseña:', password);
-    alert('¡Bienvenido!');
-    
-    setUsername('');
-    setPassword('');
-    setError('');
+        if (userExists) {
+          setError('El usuario o email ya existe');
+        } else {
+          usuarios.push(userData); // Agregar el nuevo usuario
+          localStorage.setItem('user', JSON.stringify(userData));
+          navigate('/'); // Redirigir a la página principal después de registrarse
+        }
+      })
+      .catch((error) => console.error('Error loading user data:', error));
   };
 
   return (
-    <div className="container">
-    <div className="login-container">
-      <h2>Registrarse</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="username">Nombre de usuario:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu nombre de usuario"
-          />
-        </div> <div className="input-group">
-          <label htmlFor="username">Nombre:</label>
-          <input
-            type="text"
-            id="name"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu nombre "
-          />
-        </div> <div className="input-group">
-          <label htmlFor="username">Apellido:</label>
-          <input
-            type="text"
-            id="apellido"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu apellido"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="username">email:</label>
-          <input
-            type="email"
-            id="email"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu email"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="username">telefono:</label>
-          <input
-            type="number"
-            id="tel"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu telefono"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="username">Direccion:</label>
-          <input
-            type="text"
-            id="direccion"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu Direccion"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="username">Altura:</label>
-          <input
-            type="number"
-            id="altura"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Ingresa tu nombre de usuario"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">Contraseña:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ingresa tu contraseña"
-          />
-        </div>
-        
-        {error && <p className="error-message">{error}</p>}
-        
-        <button type="submit">Iniciar sesión</button>
-      </form>
+    <div className="contenedor">
+    <div className="register-container">
+      <h2>Registro</h2>
+      <input
+        type="text"
+        name="nombre_usuario"
+        placeholder="Nombre de usuario"
+        value={userData.nombre_usuario}
+        onChange={handleChange}
+      />
+      <input
+        type="text"
+        name="nombre"
+        placeholder="Nombre"
+        value={userData.nombre}
+        onChange={handleChange}
+      />
+      <input
+        type="text"
+        name="apellido"
+        placeholder="Apellido"
+        value={userData.apellido}
+        onChange={handleChange}
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={userData.email}
+        onChange={handleChange}
+      />
+      <input
+        type="text"
+        name="telefono"
+        placeholder="Teléfono"
+        value={userData.telefono}
+        onChange={handleChange}
+      />
+      <input
+        type="text"
+        name="direccion"
+        placeholder="Dirección"
+        value={userData.direccion}
+        onChange={handleChange}
+      />
+      <input
+        type="text"
+        name="altura"
+        placeholder="Altura"
+        value={userData.altura}
+        onChange={handleChange}
+      />
+      <input
+        type="password"
+        name="contraseña"
+        placeholder="Contraseña"
+        value={userData.contraseña}
+        onChange={handleChange}
+      />
+      <button onClick={handleRegister}>Registrarse</button>
+      {error && <p className="error-message">{error}</p>}
     </div>
     </div>
   );
-};
-
-export default Register;
-
-
-
+}
