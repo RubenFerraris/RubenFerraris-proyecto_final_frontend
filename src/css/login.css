@@ -1,7 +1,6 @@
 
-body{
+.contenedor{
   background-image: url(../img/fondo.jpg);
- 
   background-size: cover;       
   background-position: center;  
   background-repeat: no-repeat; 
@@ -9,15 +8,10 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.contenedor{
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
-  margin: 1rem;
-  padding-bottom: 6rem;
 }
 .register-container {
   max-width: 500px;

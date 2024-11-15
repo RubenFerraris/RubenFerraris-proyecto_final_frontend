@@ -1,4 +1,3 @@
-// Cart.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/carrito.css';
@@ -7,16 +6,36 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
- 
     const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
     setCart(savedCart);
   }, []);
 
   const eliminarDelCarrito = (index) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
+    const updatedCart = cart.map((item, i) => {
+      if (i === index) {
+        const updatedItem = { ...item, cantidad: item.cantidad - 1 };
+        return updatedItem.cantidad > 0 ? updatedItem : null;
+      }
+      return item;
+    }).filter(Boolean); // Elimina productos con cantidad 0
+
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
+
+  
+
+  const formatPrice = (price) => {
+    // Verifica si el precio tiene el símbolo '$' y elimina el primer carácter, luego convierte a número
+    if (typeof price === 'string' && price.startsWith('$')) {
+      return parseFloat(price.slice(1));  // Elimina el '$' y convierte a número
+    }
+    return parseFloat(price);  // Si ya es un número, lo devuelve tal cual
+  };
+
+  const total = cart.reduce((total, item) => {
+    return total + formatPrice(item.price) * item.cantidad;
+  }, 0);
 
   return (
     <div className="container">
@@ -33,10 +52,10 @@ const Cart = () => {
             <div className="producto" key={index}>
               <img className="imagenProducto" src={item.imageUrl} alt={item.name} />
               <div className="detallesProducto">
-                <p>{item.name}</p>
-                <p>{item.price}</p>
+                <div className='nombre'>{item.name}</div>
+                <div className="precio">{item.price}</div>
                 <div className="cantidad">
-                  <span>{item.cantidad}</span>
+                  <span className='cantidad'>Cantidad: {item.cantidad}</span>
                 </div>
               </div>
               <button className="eliminar" onClick={() => eliminarDelCarrito(index)}>
@@ -47,7 +66,7 @@ const Cart = () => {
         )}
       </div>
       <div className="total">
-        <p>Total: ${cart.reduce((total, item) => total + parseFloat(item.price.slice(1)) * item.cantidad, 0)}</p>
+        <div className='precio'>Total: ${total.toFixed(2)}</div> {/* Muestra el total con dos decimales */}
       </div>
       <div className="botones">
         <Link to="/checkout">

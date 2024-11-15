@@ -23,7 +23,9 @@ h1 {
 
 .producto {
   display: flex;
-  justify-content: space-between;
+flex-direction: column;
+max-width: 10rem;
+
   padding: 15px;
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -74,11 +76,18 @@ h1 {
   background: var(--secundario);
   color: #ffffff;
 }
-
+.nombre{
+font-weight: 600;
+}
+.cantidad{
+  font-weight: 500;
+}
 /* Total del carrito */
 .total {
   margin-top: 20px;
-  text-align: right;
+ display: flex;
+ justify-content: center;
+ align-items: center;
 }
 
 .precio {
