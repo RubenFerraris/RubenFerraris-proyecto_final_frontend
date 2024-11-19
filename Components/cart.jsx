@@ -6,12 +6,68 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const [discount, setDiscount] = useState(0);
+  const [discountMessage, setDiscountMessage] = useState(""); 
 
+  
+  const validarDescuento = async (codigo) => {
+    if (!codigo) {
+      setDiscount(0); 
+      setDiscountMessage("Sin descuento aplicado.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:3000/descuentos/${codigo}`);
+      const data = await response.json();
+  
+      if (response.status === 200) {
+        const porcentajeDescuento = data.data[0].cant_descuento;
+        setDiscount(porcentajeDescuento);
+        setDiscountMessage(`¡Descuento del ${porcentajeDescuento}% aplicado!`);
+        localStorage.setItem('discount', porcentajeDescuento);
+        localStorage.setItem('discountMessage', `¡Descuento del ${porcentajeDescuento}% aplicado!`);
+        
+        setTimeout(() => {
+          setDiscountMessage("");
+        }, 3000);
+      } else {
+        setDiscount(0);
+        setDiscountMessage("Código de descuento inválido o expirado.");
+      
+        setTimeout(() => {
+          setDiscountMessage("");
+        }, 3000);
+      }
+    } catch (error) {
+      setDiscount(0);
+      setDiscountMessage("Error al validar el código.");
+      setTimeout(() => {
+        setDiscountMessage("");
+      }, 3000);
+      
+      console.error("Error:", error);
+    }
+  };
+  
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const codigo = document.getElementById("codigo").value.trim();
+    validarDescuento(codigo); 
+
+  };
+  
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
     setCart(savedCart);
+  
+      const savedDiscount = localStorage.getItem('discount');
+      const savedMessage = localStorage.getItem('discountMessage');
+      if (savedDiscount) setDiscount(parseFloat(savedDiscount));
+      if (savedMessage) setDiscountMessage(savedMessage);
   }, []);
-
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -20,17 +76,11 @@ const Cart = () => {
   }, []);
 
   const eliminarDelCarrito = (index) => {
-    const updatedCart = cart.map((item, i) => {
-      if (i === index) {
-        const updatedItem = { ...item, cantidad: item.cantidad - 1 };
-        return updatedItem.cantidad > 0 ? updatedItem : null;
-      }
-      return item;
-    }).filter(Boolean); 
-
+    const updatedCart = cart.filter((_, i) => i !== index);
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
+  
 
   const formatPrice = (precio) => {
     if (typeof precio === 'string' && precio.startsWith('$')) {
@@ -54,7 +104,10 @@ const Cart = () => {
     const item = updatedCart[index];
     if (item.cantidad < item.stock) {
       item.cantidad += 1;
-    } else {
+    }else if(item.cantidad ==5){
+      alert('Solo podes agregar 5 productos');
+    } 
+    else {
       alert('No hay suficiente stock para agregar más unidades');
     }
     setCart(updatedCart);
@@ -67,11 +120,12 @@ const Cart = () => {
     if (item.cantidad > 1) {
       item.cantidad -= 1;
     } else {
-      updatedCart.splice(index, 1); // Eliminar producto si la cantidad es 1
+      updatedCart.splice(index, 1); 
     }
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
+ const totalConDescuento = total - (total * (discount / 100));
 
   return (
     <div className="container">
@@ -105,18 +159,26 @@ const Cart = () => {
           ))
         )}
       </div>
-      <div className="total">
-        <div className='precio'>Total: ${total.toFixed(2)}</div> 
-      </div>
-      <form id="form-descuento cupones">
-        <label for="codigo">Código de descuento:</label>
-        <input type="text" id="codigo" name="codigo" className='m12L' />
-        <button type="submit">Validar</button>
-    </form>
+      
+      <div className="total ">
+          <div className="precio">Total: ${total.toFixed(2)}</div>
+        </div>
+        <div className="total ">
+        <div className="precio">
+            Total con descuento: ${totalConDescuento.toFixed(2)}
+          </div>
+          </div>
+      <form onSubmit={handleSubmit} id="form-descuento">
+        <label htmlFor="codigo">Código de descuento (opcional):</label>
+        <input type="text" id="codigo" name="codigo" className="m12L"  disabled={cart.length === 0} />
+        <button type="submit" disabled={cart.length === 0}>Validar</button>
+      </form>
+      <div id="resultado">{discountMessage}</div>
+
     <div id="resultado"></div>
       <div className="botones">
-        <Link to="/checkout">
-          <button className="btnPagar">Proceder al pago</button>
+      <Link to="/Finalizar_compra">
+        <button className="btnPagar" disabled={cart.length === 0}>Proceder al pago</button>
         </Link>
         <Link to="/">
           <button className="btnComprar">Seguir comprando</button>

@@ -7,6 +7,10 @@
   flex-direction: column;
   color: black;
 }
+.error {
+  color: red;
+  font-size: 0.875rem;
+}
 
 h1 {
   text-align: center;
