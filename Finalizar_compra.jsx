@@ -8,20 +8,53 @@ const Finalizar_compra = () => {
     const [discount, setDiscount] = useState(0);
     const [discountMessage, setDiscountMessage] = useState("");
     const [metodoPago, setMetodoPago] = useState("");
-    const handleCampoNumericoChange = (campo, valor) => {
-      const numericValue = valor.replace(/\D/g, ""); 
-      if (campo === "altura" && numericValue.length > 0) {
-        setErrores((prev) => ({ ...prev, altura: "" }));
-      }
-      if (campo === "contacto" && numericValue.length > 0) {
-        setErrores((prev) => ({ ...prev, contacto: "" })); 
-      }
-    
 
-      setDatosTarjeta({ ...datosTarjeta, [campo]: numericValue });
-    };
+const ControlErrores = (campo, valor) => {
+  const numericValue = valor.replace(/\D/g, "");
+
+  if (campo === "altura") {
+    if (numericValue.length === 0) {
+      setErrores((prev) => ({
+        ...prev,
+        altura: "La altura es obligatoria.",
+      }));
+    } else if (parseInt(numericValue, 10) <= 0) {
+      setErrores((prev) => ({
+        ...prev,
+        altura: "La altura debe ser un valor positivo.",
+      }));
+    } else {
+      setErrores((prev) => ({
+        ...prev,
+        altura: "",
+      }));
+    }
+  }
+
+  if (campo === "contacto") {
+    if (numericValue.length === 0) {
+      setErrores((prev) => ({
+        ...prev,
+        contacto: "El número de contacto es obligatorio.",
+      }));
+    } else if (numericValue.length < 9) {
+      setErrores((prev) => ({
+        ...prev,
+        contacto: "El número de contacto debe tener al menos 9 dígitos.",
+      }));
+    } else {
+      setErrores((prev) => ({
+        ...prev,
+        contacto: "",
+      }));
+    }
+  }
+
+  setDatosTarjeta({ ...datosTarjeta, [campo]: numericValue });
+};
+
     
-    const handleFechaExpiracionChange = (e) => {
+    const controlErrorVencimiento = (e) => {
       let valor = e.target.value.replace(/\D/g, "");
       if (valor.length > 2) {
         valor = `${valor.slice(0, 2)}/${valor.slice(2, 4)}`; 
@@ -54,7 +87,7 @@ const Finalizar_compra = () => {
         contacto: "",
       });
       
-      const handleDireccionChange = (e) => {
+      const controlErrorDire = (e) => {
         const valor = e.target.value;
         const soloLetrasYEspacios = /^[a-zA-Z\s]*$/;
         if (soloLetrasYEspacios.test(valor)) {
@@ -93,7 +126,7 @@ const Finalizar_compra = () => {
               
         if (datosTarjeta.altura.trim() === "" || datosTarjeta.contacto.trim() === "") {
           return false;
-        }
+        } 
         if (metodoPago === "Efectivo") {
           return datosTarjeta.direccion.trim() !== "";
           
@@ -103,7 +136,7 @@ const Finalizar_compra = () => {
         const sinErrores = Object.values(errores).every((error) => error === "");
         return camposCompletos && sinErrores;
       };
-      const handleCvvChange = (e) => {
+      const controlCvv = (e) => {
         const valor = e.target.value;
         if (/^\d*$/.test(valor) && valor.length <= 3) {
           setDatosTarjeta((prevState) => ({
@@ -215,7 +248,7 @@ const Finalizar_compra = () => {
     const handleChange = (e) => {
         setMetodoPago(e.target.value);
     }; 
-    const handleSubmit = (e) => {
+    const btn_enviar = (e) => {
       e.preventDefault(); 
     
       const hayErrores = Object.values(errores).some(error => error !== "");
@@ -238,7 +271,7 @@ const Finalizar_compra = () => {
     id="direccion"
     name="direccion"
     value={datosTarjeta.direccion}
-    onChange={handleDireccionChange}
+    onChange={controlErrorDire}
     placeholder="Tu dirección"
     required
   />
@@ -252,7 +285,7 @@ const Finalizar_compra = () => {
     id="altura"
     name="altura"
     value={datosTarjeta.altura}
-    onChange={(e) => handleCampoNumericoChange("altura", e.target.value)}
+    onChange={(e) => ControlErrores("altura", e.target.value)}
     placeholder="1232"
     required
   />
@@ -266,7 +299,7 @@ const Finalizar_compra = () => {
     id="contacto"
     name="contacto"
     value={datosTarjeta.contacto}
-    onChange={(e) => handleCampoNumericoChange("contacto", e.target.value)}
+    onChange={(e) => ControlErrores("contacto", e.target.value)}
     placeholder="123213213"
     required
   />
@@ -367,7 +400,7 @@ const Finalizar_compra = () => {
           type="text"
           placeholder="CVV"
           value={datosTarjeta.cvv}
-          onChange={handleCvvChange}
+          onChange={controlCvv}
         />
         <p style={{ color: 'red' }}>{errores.cvv && <p>{errores.cvv}</p>}</p>
   </div>
@@ -378,7 +411,7 @@ const Finalizar_compra = () => {
       id="inputVencimiento"
       name="fechaExpiracion"
       value={datosTarjeta.fechaExpiracion}
-      onChange={handleFechaExpiracionChange}
+      onChange={controlErrorVencimiento}
       placeholder="MM/AA"
       maxLength={5} 
       required
@@ -427,13 +460,7 @@ const Finalizar_compra = () => {
                 <p>Total con descuento: ${totalConDescuento.toFixed(2)}</p>
             </div>
             <div>
-            <button
-          type="submit"
-          onClick={handleSubmit}
-          disabled={!validarFormulario()}
-        >
-          Confirmar compra
-        </button>
+            <button type="submit" onClick={btn_enviar} disabled={!validarFormulario()}>Confirmar compra</button>
             </div>
         </div>
       );
