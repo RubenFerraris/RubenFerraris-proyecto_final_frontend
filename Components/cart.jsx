@@ -9,35 +9,46 @@ const Cart = () => {
   const [discount, setDiscount] = useState(0);
   const [discountMessage, setDiscountMessage] = useState(""); 
 
+  useEffect(() => {
+    const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
   
+    const validatedCart = savedCart.map((item) => ({
+      ...item,
+      cantidad: Math.min(item.cantidad, item.stock, 5)
+    }));
+    console.log(validatedCart)
+    setCart(validatedCart);
+    sessionStorage.setItem('cart', JSON.stringify(validatedCart));
+  }, []);
+  
+
   const validarDescuento = async (codigo) => {
     if (!codigo) {
       setDiscount(0); 
       setDiscountMessage("Sin descuento aplicado.");
       return;
     }
-  
+
     try {
-      const response = await fetch(`http://localhost:3000/descuentos/${codigo}`);
+      const response = await fetch(`http://localhost:3002/descuentos/${codigo}`);
       const data = await response.json();
-  
+
       if (response.status === 200) {
         const porcentajeDescuento = data.data[0].cant_descuento;
         setDiscount(porcentajeDescuento);
         setDiscountMessage(`¡Descuento del ${porcentajeDescuento}% aplicado!`);
-        localStorage.setItem('discount', porcentajeDescuento);
-        localStorage.setItem('discountMessage', `¡Descuento del ${porcentajeDescuento}% aplicado!`);
-        
+        sessionStorage.setItem('discount', porcentajeDescuento);
+        sessionStorage.setItem('discountMessage', `¡Descuento del ${porcentajeDescuento}% aplicado!`);
+
         setTimeout(() => {
           setDiscountMessage("");
-        }, 3000);
+        }, 1000);
       } else {
         setDiscount(0);
         setDiscountMessage("Código de descuento inválido o expirado.");
-      
         setTimeout(() => {
           setDiscountMessage("");
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       setDiscount(0);
@@ -45,31 +56,30 @@ const Cart = () => {
       setTimeout(() => {
         setDiscountMessage("");
       }, 3000);
-      
+
       console.error("Error:", error);
     }
   };
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const codigo = document.getElementById("codigo").value.trim();
     validarDescuento(codigo); 
-
   };
-  
+
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
     setCart(savedCart);
-  
-      const savedDiscount = localStorage.getItem('discount');
-      const savedMessage = localStorage.getItem('discountMessage');
-      if (savedDiscount) setDiscount(parseFloat(savedDiscount));
-      if (savedMessage) setDiscountMessage(savedMessage);
+
+    const savedDiscount = sessionStorage.getItem('discount');
+    const savedMessage = sessionStorage.getItem('discountMessage');
+    if (savedDiscount) setDiscount(parseFloat(savedDiscount));
+    if (savedMessage) setDiscountMessage(savedMessage);
   }, []);
-  
+
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -78,9 +88,8 @@ const Cart = () => {
   const eliminarDelCarrito = (index) => {
     const updatedCart = cart.filter((_, i) => i !== index);
     setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));  
   };
-  
 
   const formatPrice = (precio) => {
     if (typeof precio === 'string' && precio.startsWith('$')) {
@@ -94,38 +103,42 @@ const Cart = () => {
   }, 0);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');  
+    sessionStorage.removeItem('token'); 
     setIsLoggedIn(false);  
     navigate('/');  
   };
 
-  const sumarCantidad = (index) => {
-    const updatedCart = [...cart];
-    const item = updatedCart[index];
-    if (item.cantidad < item.stock) {
-      item.cantidad += 1;
-    }else if(item.cantidad ==5){
-      alert('Solo podes agregar 5 productos');
-    } 
-    else {
-      alert('No hay suficiente stock para agregar más unidades');
-    }
-    setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
+const sumarCantidad = (index) => {
+  const updatedCart = [...cart];
+  const item = updatedCart[index];
 
-  const restarCantidad = (index) => {
-    const updatedCart = [...cart];
-    const item = updatedCart[index];
-    if (item.cantidad > 1) {
-      item.cantidad -= 1;
-    } else {
-      updatedCart.splice(index, 1); 
-    }
-    setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
- const totalConDescuento = total - (total * (discount / 100));
+  if (item.cantidad >= item.stock || item.cantidad >= 5) {
+    alert('No puedes agregar más de 5 productos o exceder el stock disponible.');
+    return;
+  }
+
+  item.cantidad += 1; 
+  setCart(updatedCart);
+  sessionStorage.setItem('cart', JSON.stringify(updatedCart)); 
+};
+
+
+const restarCantidad = (index) => {
+  const updatedCart = [...cart];
+  const item = updatedCart[index];
+
+  if (item.cantidad > 1) {
+    item.cantidad -= 1; 
+  } else {
+    updatedCart.splice(index, 1); 
+  }
+
+  setCart(updatedCart);
+  sessionStorage.setItem('cart', JSON.stringify(updatedCart)); 
+};
+
+
+  const totalConDescuento = total - (total * (discount / 100));
 
   return (
     <div className="container">
@@ -161,13 +174,14 @@ const Cart = () => {
       </div>
       
       <div className="total ">
-          <div className="precio">Total: ${total.toFixed(2)}</div>
-        </div>
-        <div className="total ">
+        <div className="precio">Total: ${total.toFixed(2)}</div>
+      </div>
+      <div className="total ">
         <div className="precio">
-            Total con descuento: ${totalConDescuento.toFixed(2)}
-          </div>
-          </div>
+          Total con descuento: ${totalConDescuento.toFixed(2)}
+        </div>
+      </div>
+      
       <form onSubmit={handleSubmit} id="form-descuento">
         <label htmlFor="codigo">Código de descuento (opcional):</label>
         <input type="text" id="codigo" name="codigo" className="m12L"  disabled={cart.length === 0} />
@@ -175,17 +189,14 @@ const Cart = () => {
       </form>
       <div id="resultado">{discountMessage}</div>
 
-    <div id="resultado"></div>
       <div className="botones">
-      <Link to="/Finalizar_compra">
-        <button className="btnPagar" disabled={cart.length === 0}>Proceder al pago</button>
+        <Link to="/Finalizar_compra">
+          <button className="btnPagar" disabled={cart.length === 0}>Proceder al pago</button>
         </Link>
         <Link to="/">
           <button className="btnComprar">Seguir comprando</button>
         </Link>
-
       </div>
-      
     </div>
   );
 };

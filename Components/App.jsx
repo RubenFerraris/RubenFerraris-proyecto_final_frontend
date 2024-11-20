@@ -4,7 +4,7 @@ import '../css/style.css';
 
 const obtenerPlatos = async () => {
   try {
-      const data = await fetch('http://localhost:3000/restaurante__menu');
+      const data = await fetch('http://localhost:3002/restaurante__menu');
       const results = await data.json();
       return results;
   } catch (error) {
@@ -15,7 +15,7 @@ const obtenerPlatos = async () => {
 
 const Selectcategorias = async (categoria) => {
   try {
-      const data = await fetch(`http://localhost:3000/restaurante__plato/${categoria}`);
+      const data = await fetch(`http://localhost:3002/restaurante__plato/${categoria}`);
       const results = await data.json();
       return results;
   } catch (error) {
@@ -26,7 +26,7 @@ const Selectcategorias = async (categoria) => {
 
 const Allcategorias = async () => {
   try {
-      const data = await fetch(`http://localhost:3000/restaurante__categorias`);
+      const data = await fetch(`http://localhost:3002/restaurante__categorias`);
       const results = await data.json();
       return results;
   } catch (error) {
@@ -42,6 +42,7 @@ export default function Bodegones() {
   const [nombrePlato, setNombrePlato] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [cart, setCart] = useState([]); // Estado del carrito
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -53,14 +54,14 @@ export default function Bodegones() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsLoading(true); // Activar estado de carga
+      setIsLoading(true); 
       const categorias = await Allcategorias();
       if (Array.isArray(categorias)) {
         setCategories(categorias);
       } else {
         setCategories([]);
       }
-      setIsLoading(false); // Desactivar estado de carga
+      setIsLoading(false);
     };
     fetchCategories();
   }, []);
@@ -79,11 +80,16 @@ export default function Bodegones() {
         } else {
           setMenuData([]);
         }
-
         setIsLoading(false);
       };
       fetchData();
   }, [selectedCategory]);
+
+  useEffect(() => {
+    // Leer carrito desde sessionStorage al cargar el componente
+    const storedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    setCart(storedCart);
+  }, []);
 
   const agregarAlCarrito = (item) => {
     console.log('Producto al agregar:', item);
@@ -94,16 +100,15 @@ export default function Bodegones() {
       alert("Por favor, inicia sesión para agregar productos al carrito");
       return;
     }
-    let carrito = JSON.parse(localStorage.getItem('cart')) || [];
-    console.log("Carrito antes de agregar:", carrito); // Verifica el carrito antes de agregar
-    const totalProductos = carrito.reduce((total, producto) => total + producto.cantidad, 0);
+
+    const totalProductos = cart.reduce((total, producto) => total + producto.cantidad, 0);
     if (totalProductos >= 5) {
       alert('No puedes agregar más de 5 productos al carrito');
       return;
     }
-  
-    const productoExistente = carrito.find((producto) => producto.ID_PLATO === item.ID_PLATO);
-  
+
+    const productoExistente = cart.find((producto) => producto.ID_PLATO === item.ID_PLATO);
+
     if (productoExistente) {
       if (productoExistente.cantidad < productoExistente.stock) {
         productoExistente.cantidad += 1;
@@ -115,20 +120,17 @@ export default function Bodegones() {
         console.error('Faltan propiedades en el producto:', item);
         return;
       }
-  
-      carrito.push({ ...item, cantidad: 1, stock: item.stock });
+      const updatedCart = [...cart, { ...item, cantidad: 1, stock: item.stock }];
+      setCart(updatedCart);
+      sessionStorage.setItem('cart', JSON.stringify(updatedCart)); // Guardar el carrito en sessionStorage
     }
-  
-    localStorage.setItem('cart', JSON.stringify(carrito));
-    console.log("Carrito después de agregar:", carrito); // Verifica el carrito después de agregar
   };
-  
-  
-
 
   const handleLogout = () => {
     localStorage.removeItem('token');  
     setIsLoggedIn(false);  
+    sessionStorage.removeItem('cart'); // Eliminar el carrito de sessionStorage al cerrar sesión
+    setCart([]); // Limpiar el carrito del estado
     navigate('/');  
   };
 
@@ -149,7 +151,7 @@ export default function Bodegones() {
     if (nombrePlato.trim()) {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:3000/restaurante__plato/${nombrePlato}`, {
+        const response = await fetch(`http://localhost:3002/restaurante__plato/${nombrePlato}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -168,9 +170,11 @@ export default function Bodegones() {
       setIsLoading(false);
     }
   };
+
   const handleMostrarTodo = () => {
-  setSelectedCategory(null); 
+    setSelectedCategory(null); 
   };
+
   return (
     <>
       <div className="header">

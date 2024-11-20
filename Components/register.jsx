@@ -8,9 +8,6 @@ const RegistroUsuario = () => {
     nombre: "",
     apellido: "",
     email: "",
-    telefono: "",
-    direccion: "",
-    altura: "",
     contraseña: "",
   });
 
@@ -32,7 +29,7 @@ const RegistroUsuario = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/restaurante__usuario", {
+      const response = await fetch("http://localhost:3002/restaurante__usuario", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,30 +89,6 @@ const RegistroUsuario = () => {
             name="email"
             placeholder="Email"
             value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="telefono"
-            placeholder="Teléfono"
-            value={formData.telefono}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="direccion"
-            placeholder="Dirección"
-            value={formData.direccion}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="altura"
-            placeholder="Altura"
-            value={formData.altura}
             onChange={handleChange}
             required
           />

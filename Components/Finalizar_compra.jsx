@@ -2,6 +2,46 @@ import React, { useEffect, useState } from "react";
 import '../css/carrito.css';
 import { Link } from "react-router-dom";
 
+import Swal from 'sweetalert2';
+
+const comprar_efectivo = async (email, direccion, altura, telefono, metodo_pago, total) => {
+  try {
+    const response = await fetch(`http://localhost:3002/compra_efectivo/${email}/${direccion}/${altura}/${telefono}/${metodo_pago}/${total}`);
+    const results = await response.json();
+    return results;
+  } catch (error) {
+    console.error("Error al realizar compra con efectivo:", error);
+    return [];
+  }
+};
+
+const comprar_tarjeta = async (email, direccion, altura, telefono, metodo_pago, total, duenio_tarjeta, numero_tarjeta, fecha_vencimiento) => {
+  try {
+    const response = await fetch(`http://localhost:3002/compra_tarjeta/${email}/${direccion}/${altura}/${telefono}/${metodo_pago}/${total}/${duenio_tarjeta}/${numero_tarjeta}/${fecha_vencimiento}`);
+    const results = await response.json();
+    return results;
+  } catch (error) {
+    console.error("Error al realizar compra con tarjeta:", error);
+    return [];
+  }
+};
+
+const descontarStockEnBD = async (id, cantidad) => { 
+  try {
+    const response = await fetch('http://localhost:3002/descontarStock', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id, cantidad })
+    });
+
+    const data = await response.json();
+    console.log('Stock actualizado:', data.message); 
+  } catch (error) { 
+    console.error('No se pudo descontar el stock:', error.message);
+  }
+};
 
 const Finalizar_compra = () => {
     const [cart, setCart] = useState([]);
@@ -9,6 +49,19 @@ const Finalizar_compra = () => {
     const [discountMessage, setDiscountMessage] = useState("");
     const [metodoPago, setMetodoPago] = useState("");
 
+    const [idUsuario, setIdUsuario] = useState(null);
+
+    useEffect(() => {
+      const email = localStorage.getItem('email');
+      console.log("Email desde localStorage:", email); 
+      if (email) {
+        setIdUsuario(email);  
+      }
+    }, []);
+    
+    console.log(metodoPago);
+    
+    
 const ControlErrores = (campo, valor) => {
   const numericValue = valor.replace(/\D/g, "");
 
@@ -57,7 +110,7 @@ const ControlErrores = (campo, valor) => {
     const controlErrorVencimiento = (e) => {
       let valor = e.target.value.replace(/\D/g, "");
       if (valor.length > 2) {
-        valor = `${valor.slice(0, 2)}/${valor.slice(2, 4)}`; 
+        valor = `${valor.slice(0, 2)}_${valor.slice(2, 4)}`; 
       }
       setDatosTarjeta((prevState) => ({
         ...prevState,
@@ -158,34 +211,31 @@ const ControlErrores = (campo, valor) => {
           }
         }
         if (campo === "fechaExpiracion") {
-          let mes = "";
-          let anio = "";
-          let valorFormateado = valor;
-      
-          if (valor.length > 2) {
-            valorFormateado = valor.slice(0, 2) + '/' + valor.slice(2); 
-            mes = parseInt(valor.slice(0, 2), 10); 
-            anio = parseInt(valor.slice(3), 10); 
-      
+          const valorFormateado = valor.replace('/', '_'); 
+          
+          if (valor.length === 5 && /^\d{2}_\d{2}$/.test(valorFormateado)) {
+            const mes = parseInt(valorFormateado.slice(0, 2), 10);
+            const anio = parseInt(valorFormateado.slice(3), 10);
+        
             console.log(`Mes: ${mes}, Año: ${anio}`);
-      
+        
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear() % 100; 
-    
+        
             if (
               mes < 1 || mes > 12 || 
-              (anio < currentYear || (anio === currentYear && mes < currentMonth)) 
+              (anio < currentYear || (anio === currentYear && mes < currentMonth))
             ) {
               erroresTemp.fechaExpiracion = "La tarjeta está vencida o el mes es inválido.";
             } else {
               erroresTemp.fechaExpiracion = "";
             }
           } else {
-            erroresTemp.fechaExpiracion = "";
+            erroresTemp.fechaExpiracion = "La fecha de expiración debe tener 5 dígitos en formato MM/AA.";
           }
         }
-      
+        
         
         if (campo === "numeroTarjeta") {
           const numeroSinEspacios = valor.replace(/\s/g, ""); 
@@ -210,31 +260,27 @@ const ControlErrores = (campo, valor) => {
         }
         
         setErrores(erroresTemp);
-        if (campo === "fechaExpiracion") {
-          return valorFormateado;
-        }
+
         
     };
     useEffect(() => {
-        const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        const savedDiscount = localStorage.getItem('discount');
-        const savedMessage = localStorage.getItem('discountMessage');
-
-        setCart(savedCart);
-        if (savedDiscount) setDiscount(parseFloat(savedDiscount));
-        if (savedMessage) setDiscountMessage(savedMessage);
+      const savedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+      console.log("Carrito recuperado:", savedCart);
+      const savedDiscount = sessionStorage.getItem('discount');
+      const savedMessage = sessionStorage.getItem('discountMessage');
+      if (savedDiscount) setDiscount(parseFloat(savedDiscount));
+      if (savedMessage) setDiscountMessage(savedMessage);
+      setCart(savedCart);
     }, []);
+    
+
+
 
     const total = cart.reduce((total, item) => {
         return total + (parseFloat(item.precio.replace('$', '')) * item.cantidad);
     }, 0);
 
     const totalConDescuento = total - (total * (discount / 100));
-    useEffect(() => {
-      const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-      setCart(savedCart);
-    }, []);
-  
     const formatPrice = (precio) => {
 
       if (typeof precio === 'string' && precio.startsWith('$')) {
@@ -242,26 +288,75 @@ const ControlErrores = (campo, valor) => {
       }
       return parseFloat(precio); 
     };
+  cart.forEach((item) => {
+    const precioFinal = item.precio * item.cantidad;
+    console.log("ID del plato:", item.ID_PLATO);
 
- 
+  });
       
     const handleChange = (e) => {
         setMetodoPago(e.target.value);
     }; 
-    const btn_enviar = (e) => {
-      e.preventDefault(); 
-    
-      const hayErrores = Object.values(errores).some(error => error !== "");
-      if (hayErrores) {
-        alert("Por favor, corrige los errores antes de enviar el formulario.");
-        return;
+    const num_sin_Espacio = datosTarjeta.numeroTarjeta.replace(/\s/g, ""); 
+    const telefono = parseInt(datosTarjeta.contacto, 10);  
+    const num_sin_Espacio2 = parseInt(num_sin_Espacio, 10);  
+    const altura_int = parseInt(datosTarjeta.altura, 10);  
+
+    const btn_enviar = async (e) => {
+      e.preventDefault();
+      if (metodoPago === 'Efectivo') {
+          comprar_efectivo(idUsuario, datosTarjeta.direccion, datosTarjeta.altura, telefono, metodoPago, totalConDescuento);
+      } else {
+          comprar_tarjeta(idUsuario, telefono, datosTarjeta.direccion, altura_int, datosTarjeta.nombreTitular, num_sin_Espacio2, datosTarjeta.fechaExpiracion, metodoPago, totalConDescuento);
       }
-      alert("Formulario enviado correctamente");
-    };
+      Swal.fire({
+          title: '¿Estás seguro?',
+          text: '¿Deseas confirmar la compra?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, confirmar',
+          cancelButtonText: 'Cancelar',
+      }).then(async (result) => {
+          if (result.isConfirmed) {
+              console.log("Compra confirmada");
+  
+              try {
+                const ejecutarQuery = cart.map(item => descontarStockEnBD(item.ID_PLATO, item.cantidad));
+                await Promise.all(ejecutarQuery); 
+
+                setCart([]);
+                sessionStorage.removeItem('cart'); 
+                sessionStorage.removeItem('discount'); 
+                sessionStorage.removeItem('discountMessage');
+                Swal.fire({
+                  title: 'Compra confirmada',
+                  text: 'Tu compra ha sido realizada con éxito.',
+                  icon: 'success',
+                  timer: 1500, 
+                  showConfirmButton: false, 
+                }).then(() => {
+                  window.location.href = '/'; 
+                });
+              } catch (error) {
+                  console.error("Error al confirmar la compra:", error);
+                  Swal.fire({
+                      title: 'Error',
+                      text: 'Hubo un problema al procesar tu compra. Inténtalo nuevamente.',
+                      icon: 'error',
+                  });
+              }
+          }
+      });
+  };
+  
     
+  
     return (
+      
   <div>
-    
+        <div>
+      <h1>ID del usuario: {idUsuario}</h1>
+    </div>
 <h4>Ingresa los datos para realizar la entrega</h4>
   
 <div>
